@@ -31,7 +31,7 @@ function App() {
   return (
     <div>
       <Header></Header>
-      {/* ↑ 사용자 정의 태그 = 컴퍼넌트 */}
+      {/* ↑ 사용자 정의 태그 = Component */}
       <Nav></Nav>
       <Article></Article>
     </div>
