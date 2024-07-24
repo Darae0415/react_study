@@ -1,4 +1,6 @@
 import './App.css';
+import { useState } from 'react';
+
 function Header(props){
   //props는 component(컴포넌트)의 속성이라고 지칭
   //props에는 객체(Object)가 들어있음.(title=React)
@@ -40,25 +42,47 @@ function Article(props){
 }
 
 function App() {
+  // const _mode = useState("Welcome");
+  // const mode = _mode[0];
+  // const setMode = _mode; 를 아래에 표현 ↓
+  const [mode, setMode] = useState('Welcome');
+  //배열안에 있는 mode와 setMode는 보이는 형식 상관없이 마음대로 지어도 되지만 통일성이 어느정돈
+  //있어야지 헷깔리지 않고 계속 쓸 수 있음
+  const [id, setId] = useState(null);
   const topics = [
     {id:1, title:'html', body:'html is ...'},
     {id:2, title:'css', body:'css is ...'},
     {id:3, title:'js', body:'js is ...'},
   ]
+  let content = null;
+  if(mode === 'Welcome'){
+    content = <Article title="Welcome" body="Hello, WEB"></Article>
+  } else if(mode === 'Read'){
+    let title, body = null;
+    for(let i =0; i<topics.length; i++){
+      if(topics[i].id === id){
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+  }
   return (
     <div>
       <Header title="WEB" onChangeMode={()=>{
-        alert('Header');
+        setMode('Welcome');
       }}></Header>
       {/* ↑ 사용자 정의 태그 = Component */}
-      <Nav topics={topics} onChangeMode={(id)=>{
+      <Nav topics={topics} onChangeMode={(_id)=>{
         // ()=>안에 id가 들어가는 이유는 주제를 클릭할 때마다 그 주제의 id를
         // App Component에 알려주기 위해서
-        alert(id);
+        setMode('Read');
+        setId(_id);
       }}></Nav>
-      <Article title="Welcome" body="Hello, WEB"></Article>
+      {content}
     </div>
   );
 }
-
+// Prop = Component를 사용하는 외부자를 위한 데이터
+// State = Component를 만드는 내부자를 위한 데이터
 export default App;
