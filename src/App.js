@@ -40,6 +40,24 @@ function Article(props){
   </article>
   );
 }
+function Create(props){
+  return(
+    <article>
+      <h2>Create</h2>
+      <form onSubmit={(e)=>{
+        e.preventDefault();
+        const title = e.target.title.value;
+        const body = e.target.body.value;
+        props.onCreate(title,body);
+      }}>
+        <p><input type='text' name='title' placeholder='title'/></p>
+        <p><textarea name='body' placeholder='body'/></p>
+        <p><input type='submit' value="Create"></input></p>
+      </form>
+    </article>
+    
+  );
+}
 
 function App() {
   // const _mode = useState("Welcome");
@@ -49,11 +67,13 @@ function App() {
   //배열안에 있는 mode와 setMode는 보이는 형식 상관없이 마음대로 지어도 되지만 통일성이 어느정돈
   //있어야지 헷깔리지 않고 계속 쓸 수 있음
   const [id, setId] = useState(null);
-  const topics = [
+  const [nextId, setNextId] = useState(4);
+  const [topics, setTopics] = useState([
     {id:1, title:'html', body:'html is ...'},
     {id:2, title:'css', body:'css is ...'},
     {id:3, title:'js', body:'js is ...'},
-  ]
+  ]);
+ 
   let content = null;
   if(mode === 'Welcome'){
     content = <Article title="Welcome" body="Hello, WEB"></Article>
@@ -66,6 +86,16 @@ function App() {
       }
     }
     content = <Article title={title} body={body}></Article>
+  } else if(mode === 'Create'){
+    content = <Create onCreate={(_title,_body)=>{
+      const newTopic = {id:nextId, title:_title, body:_body}
+      const newTopics = [...topics]
+      newTopics.push(newTopic);
+      setTopics(newTopics);
+      setMode('Read');
+      setId(nextId);
+      setNextId(nextId+1);
+    }}></Create>
   }
   return (
     <div>
@@ -80,6 +110,10 @@ function App() {
         setId(_id);
       }}></Nav>
       {content}
+      <a href='/create' onClick={(e)=>{
+        e.preventDefault();
+        setMode('Create');
+      }}>create</a>
     </div>
   );
 }
