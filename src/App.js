@@ -66,6 +66,30 @@ function Create(props){
     
   );
 }
+function Update(props){
+  const [title, setTitle] = useState(props.title);
+  const [body, setBody] = useState(props.body);
+  return(
+    <article>
+      <h2>Update</h2>
+      <form onSubmit={(e)=>{
+        e.preventDefault();
+        const title = e.target.title.value;
+        const body = e.target.body.value;
+        props.onUpdate(title,body);
+      }}>
+        <p><input type='text' name='title' placeholder='title' value={title} onChange={(e)=>{
+          setTitle(e.target.value);
+        }}/></p>
+        {/* react에서는 onChange가 값이 바뀔때마다 Change가 됨 */}
+        <p><textarea name='body' placeholder='body' value={body} onChange={(e)=>{
+          setBody(e.target.value);
+        }}/></p>
+        <p><input type='submit' value="Update"></input></p>
+      </form>
+    </article>
+  );
+}
 
 function App() {
   // const _mode = useState("Welcome");
@@ -85,6 +109,7 @@ function App() {
   ]);
  
   let content = null;
+  let contextControl = null;
   if(mode === 'Welcome'){
     content = <Article title="Welcome" body="Hello, WEB"></Article>
   } else if(mode === 'Read'){
@@ -96,6 +121,11 @@ function App() {
       }
     }
     content = <Article title={title} body={body}></Article>
+    contextControl = <li><a href={'/update/'+id} onClick={(e)=>{
+      e.preventDefault();
+      setMode('Update')
+    }}>Update</a></li>
+    // contextControl을 mode가 Read 일때만 보이게 함
   } else if(mode === 'Create'){
     content = <Create onCreate={(_title,_body)=>{
       const newTopic = {id:nextId, title:_title, body:_body}
@@ -122,7 +152,28 @@ function App() {
       setNextId(nextId+1);
       //다음에 또 배열안에 추가할 것을 대비해 +1를 미리 해둔다.
     }}></Create>
+  } else if(mode === 'Update'){
+    let title, body = null;
+    for(let i =0; i<topics.length; i++){
+      if(topics[i].id === id){
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Update title={title} body={body} onUpdate={(title, body)=>{
+      const updatedTopic = {id:id, title:title, body:body}
+      const newTopics = [...topics]
+      for(let i=0; i<newTopics.length; i++){
+        if(newTopics[i].id === id){
+          newTopics[i] = updatedTopic;
+          break;
+        }
+      }
+      setTopics(newTopics);
+      setMode('Read');
+    }}></Update>
   }
+
   return (
     <div>
       <Header title="WEB" onChangeMode={()=>{
@@ -136,10 +187,13 @@ function App() {
         setId(_id);
       }}></Nav>
       {content}
-      <a href='/create' onClick={(e)=>{
-        e.preventDefault();
-        setMode('Create'); //클릭하면 mode를(setMode) Create로 바꿈
-      }}>create</a>
+      <ul>
+        <li><a href='/create' onClick={(e)=>{
+          e.preventDefault();
+          setMode('Create'); //클릭하면 mode를(setMode) Create로 바꿈
+        }}>create</a></li>
+        {contextControl}
+      </ul>
     </div>
   );
 }
