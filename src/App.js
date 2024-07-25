@@ -47,12 +47,20 @@ function Create(props){
       <form onSubmit={(e)=>{
         e.preventDefault();
         const title = e.target.title.value;
+        // text name(title)에 저장된 데이터(value)를 title에 저장
         const body = e.target.body.value;
+        // textarea name(body)에 저장된 데이터(value)를 title에 저장
         props.onCreate(title,body);
+        // 1번째 파라미터는title, 2번째 파라미터는 body
       }}>
         <p><input type='text' name='title' placeholder='title'/></p>
+        {/* name(title)에 데이터를 저장해주고 placeholder는
+        이text 창에 어떤걸 입력하면 되는지 입력전에 알려주는 글
+        p태그는 각각 다른 문단처럼 보이게 하려고 감싸줌*/}
         <p><textarea name='body' placeholder='body'/></p>
+        {/* textarea 여러글을(장문) 저장받을때 쓰기 좋음 */}
         <p><input type='submit' value="Create"></input></p>
+        {/* submit 버튼생성 */}
       </form>
     </article>
     
@@ -68,6 +76,8 @@ function App() {
   //있어야지 헷깔리지 않고 계속 쓸 수 있음
   const [id, setId] = useState(null);
   const [nextId, setNextId] = useState(4);
+  // topics의 마지막 id가 3이라서 그다음으로 관리해주고 싶어서
+  // next(다음)Id(id)값을 4(topics.id=3;)로 지정
   const [topics, setTopics] = useState([
     {id:1, title:'html', body:'html is ...'},
     {id:2, title:'css', body:'css is ...'},
@@ -89,12 +99,28 @@ function App() {
   } else if(mode === 'Create'){
     content = <Create onCreate={(_title,_body)=>{
       const newTopic = {id:nextId, title:_title, body:_body}
+      // title:_title => title이라는 배열변수안에 onCreate에 있는 
+      // 1번째 파라미터(title)을 가져오는 셈(body도 똑같음)
+      // id:nextId는 topics의 id가 3까지 있어서 4부터 지정해주려고 useState설정함
       const newTopics = [...topics]
+      // newTopics에 배열[...topics]문맥을 그대로 복사
+      // const [value, setValue] = useState(Primitive); <원시데이터>
+      // → String, Number, boolean,(앞 3개는 자주씀) null, bigint, undefined, symbol
+      // const [value, setValue] = useState(Object); <범객체>
+      // → object, array  ※ 얘네들은 추가하려면 꼭 복제를 해야됨
+      // object는 const newValue = {...value}로 복제 const newTopics = {...topics}
+      // array는  const newValue = [...value]로 복제 const newTopics = [...topics]
       newTopics.push(newTopic);
+      // 한 뒤 newValue를 변경(push) = newTopics.push(newTopic);
       setTopics(newTopics);
+      // setValue에newValue 데이터를 대입 = setTopics(newTopics);
       setMode('Read');
+      // setTopics를 보기위해 for문으로 만든 read로 돌아가라 그러고
+      // 추가한 title과 body가 출력되게 해라를 랜더링시키려고 setMode를 'Read'로 바꿈
       setId(nextId);
+      //setId는 nextId에 저장된 데이터로 바꿔줌
       setNextId(nextId+1);
+      //다음에 또 배열안에 추가할 것을 대비해 +1를 미리 해둔다.
     }}></Create>
   }
   return (
@@ -112,7 +138,7 @@ function App() {
       {content}
       <a href='/create' onClick={(e)=>{
         e.preventDefault();
-        setMode('Create');
+        setMode('Create'); //클릭하면 mode를(setMode) Create로 바꿈
       }}>create</a>
     </div>
   );
